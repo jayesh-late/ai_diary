@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+from app.db.base import Base
+from app.db.session import engine
 
 app = FastAPI(
     title="Daily Diary API",
@@ -6,6 +8,7 @@ app = FastAPI(
     version="1.0"
 )
 
+Base.metadata.create_all(bind=engine)
 
 @app.get("/")
 def health_check():
