@@ -4,4 +4,4 @@ Base = declarative_base()
 
 
 from app.db.models.user import User
-from app.db.models.diary_entry import DailyEntry
+from app.db.models.diary_model import DailyEntry

@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.db.models.diary_entry import DailyEntry
+from app.db.models.diary_model import DailyEntry
 from app.schemas.diary_schema import DiaryEntryCreate
 from datetime import date
 class DiaryRepository:
@@ -65,5 +65,5 @@ class DiaryRepository:
 
         db.delete(entry)
         db.commit()
-        return entry
 
+        return entry

@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.db.models.diary_entry import DailyEntry
+from app.db.models.diary_model import DailyEntry
 
 class AnalyticsRepository:
 

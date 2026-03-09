@@ -11,7 +11,7 @@ class User(Base):
     hashed_password = Column(String,nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
-    diary_entries = relationship("DiaryEntry", back_populates="user")
+    daily_entries = relationship("DailyEntry", back_populates="user")
     habits = relationship("Habit", back_populates="user")
     decisions = relationship("Decision", back_populates="user")
 

@@ -4,7 +4,7 @@ from datetime import datetime
 from sqlalchemy.orm import relationship
 
 class DailyEntry(Base):
-    __tablename__ = "diary_entries"
+    __tablename__ = "daily_entries"
 
     id = Column(Integer,primary_key=True,index=True)
     user_id = Column(Integer,ForeignKey("users.id"),index=True)
@@ -14,5 +14,5 @@ class DailyEntry(Base):
     mood = Column(String)
     notes = Column(String)
 
-    user = relationship("User",back_populates="diary_entries")
+    user = relationship("User",back_populates="daily_entries")
 
