@@ -65,5 +65,5 @@ class DiaryRepository:
 
         db.delete(entry)
         db.commit()
-
         return entry
+

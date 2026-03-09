@@ -4,10 +4,10 @@ from fastapi import APIRouter,Query
 from app.core.deps import DBSession
 from app.services.diary_service import DiaryService
 from typing import List
-router = APIRouter(prefix="/diary",tags=["Diary"])
 
+router = APIRouter()
 
-@router.post("/",response_model=DiaryEntryResponse)
+@router.post("/entry",response_model=DiaryEntryResponse)
 async def create_diary_entry(data:DiaryEntryCreate,db:DBSession):
     user_id = 1
     return DiaryService.create_entry(
@@ -16,7 +16,7 @@ async def create_diary_entry(data:DiaryEntryCreate,db:DBSession):
         data=data
     )
 
-@router.get("/",response_model=List[DiaryEntryResponse])
+@router.get("/entries",response_model=List[DiaryEntryResponse])
 async def get_diary_entries(
         db:DBSession,
         skip:int = Query(0, ge=0),
@@ -34,7 +34,7 @@ async def get_diary_entries(
         end_date=end_date
     )
 
-@router.put("/{entry_id}")
+@router.put("/update/{entry_id}")
 async def update_diary_entry(
         db:DBSession,
         entry_id :int,
@@ -46,7 +46,7 @@ async def update_diary_entry(
         data=data
     )
 
-@router.delete("/{entry_id}")
+@router.delete("/delete/{entry_id}")
 async def delete_diary_entry(db:DBSession,entry_id:int):
     return DiaryService.delete_entry(
         db=db,

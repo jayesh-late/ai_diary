@@ -1,7 +1,7 @@
 from app.db.base import Base
-from sqlalchemy import String,Column,Integer,ForeignKey,DateTime
+from sqlalchemy import String,Column,Integer,DateTime
 from sqlalchemy.orm import relationship
-from datetime import datetime
+from sqlalchemy.sql import func
 
 class User(Base):
     __tablename__ = "users"
@@ -9,7 +9,9 @@ class User(Base):
     id = Column(Integer,primary_key=True,index=True)
     email = Column(String,unique=True,index=True,nullable=False)
     hashed_password = Column(String,nullable=False)
-    created_at = Column(DateTime,onupdate=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
 
-    diary_entries = relationship("DailyEntry",back_populates="user")
+    diary_entries = relationship("DiaryEntry", back_populates="user")
+    habits = relationship("Habit", back_populates="user")
+    decisions = relationship("Decision", back_populates="user")
 
