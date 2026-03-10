@@ -1,6 +1,5 @@
 from sqlalchemy import ForeignKey,Column,String,Integer,Date
 from app.db.base import Base
-from datetime import datetime
 from sqlalchemy.orm import relationship
 
 class DailyEntry(Base):

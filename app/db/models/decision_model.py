@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, Text, DateTime, ForeignKey
-from sqlalchemy.sql import func
+from datetime import datetime
 from app.db.base import Base
 from sqlalchemy.orm import relationship
 
@@ -18,6 +18,6 @@ class Decision(Base):
 
     outcome = Column(Text)
 
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_at = Column(DateTime, default=datetime.utcnow)
 
     user = relationship("User",back_populates="decisions")

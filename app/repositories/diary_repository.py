@@ -40,6 +40,15 @@ class DiaryRepository:
         )
 
     @staticmethod
+    def get_entry_by_id(db:Session,entry_id:int):
+        entry = db.query(DailyEntry).filter(DailyEntry.id == entry_id).first()
+
+        if not entry:
+            return None
+
+        return entry
+
+    @staticmethod
     def update_entry(db:Session,entry_id:int,data:DiaryEntryCreate):
         entry = db.query(DailyEntry).filter(DailyEntry.id == entry_id).first()
 
@@ -57,13 +66,6 @@ class DiaryRepository:
         return entry
 
     @staticmethod
-    def delete_entry(db:Session,entry_id:int):
-        entry = db.query(DailyEntry).filter(DailyEntry.id == entry_id).first()
-
-        if not entry :
-            return None
-
+    def delete_entry(db: Session, entry: DailyEntry):
         db.delete(entry)
         db.commit()
-
-        return entry
