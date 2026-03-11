@@ -1,6 +1,8 @@
 from fastapi import HTTPException,status
 from app.repositories.diary_repository import DiaryRepository
 from sqlalchemy.orm import Session
+
+from app.repositories.habit_repository import HabitRepository
 from app.schemas.diary_schema import DiaryEntryCreate
 
 class DiaryService:
@@ -108,4 +110,7 @@ class DiaryService:
         DiaryRepository.delete_entry(db, entry)
 
         return {"message": "Deleted"}
+
+
+
 

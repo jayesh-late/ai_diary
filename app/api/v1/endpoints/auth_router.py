@@ -1,10 +1,15 @@
 
 from fastapi import APIRouter,Depends
 from fastapi.security import OAuth2PasswordRequestForm
-
-from app.core.deps import DBSession
 from app.schemas.auth_schema import UserSignup,UserResponse
 from app.services.auth_service import AuthService
+from app.core.deps import get_db,get_current_user
+from typing import Annotated
+from sqlalchemy.orm import Session
+from app.db.models.user import User
+DBSession = Annotated[Session,Depends(get_db)]
+UserSession = Annotated[User,Depends(get_current_user)]
+
 
 router = APIRouter()
 

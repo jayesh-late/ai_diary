@@ -42,6 +42,3 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         )
 
     return user
-
-DBSession = Annotated[Session,Depends(get_db)]
-UserSession = Annotated[User,Depends(get_current_user)]

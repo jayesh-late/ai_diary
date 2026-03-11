@@ -18,3 +18,4 @@ class Habit(Base):
     is_active = Column(Boolean, default=True)
 
     user = relationship("User",back_populates="habits")
+    logs = relationship("HabitLog",back_populates="habit",cascade="all,delete")

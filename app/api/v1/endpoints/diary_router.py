@@ -1,8 +1,13 @@
 from datetime import date
 from app.schemas.diary_schema import DiaryEntryCreate,DiaryEntryResponse
-from fastapi import APIRouter,Query,HTTPException,status
-from app.core.deps import DBSession, UserSession
+from fastapi import APIRouter,Query,Depends
 from app.services.diary_service import DiaryService
+from app.core.deps import get_db,get_current_user
+from typing import List,Annotated
+from sqlalchemy.orm import Session
+from app.db.models.user import User
+DBSession = Annotated[Session,Depends(get_db)]
+UserSession = Annotated[User,Depends(get_current_user)]
 
 
 router = APIRouter()
@@ -17,7 +22,7 @@ async def create_diary_entry(data:DiaryEntryCreate,db:DBSession,current_user:Use
         data=data
     )
 
-@router.get("/entries")
+@router.get("/entries",response_model=List[DiaryEntryResponse])
 async def get_diary_entries(
         db:DBSession,
         current_user:UserSession,
