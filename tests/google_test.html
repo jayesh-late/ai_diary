@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google Login Test</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+
+<h2>Google Login Test</h2>
+
+<div id="g_id_onload"
+     data-client_id="492629886649-kphnmbe9boia6v4op71ns5vuc0fgi8bj.apps.googleusercontent.com"
+     data-context="signin"
+     data-callback="handleCredentialResponse"
+     data-auto_prompt="false">
+</div>
+
+<div class="g_id_signin"
+     data-type="standard"
+     data-size="large">
+</div>
+
+<script>
+
+function handleCredentialResponse(response) {
+
+    const googleToken = response.credential;
+
+    console.log("Google ID Token:", googleToken);
+
+    fetch("http://127.0.0.1:8000/auth/social/google", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            id_token: googleToken
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        console.log("Backend response:", data);
+
+        if (data.access_token) {
+            alert("Login successful\nAccess Token:\n" + data.access_token);
+        } else {
+            alert("Login failed");
+        }
+    })
+    .catch(err => {
+        console.error("Error:", err);
+    });
+
+}
+
+</script>
+
+</body>
+</html>

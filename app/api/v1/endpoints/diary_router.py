@@ -5,7 +5,7 @@ from app.services.diary_service import DiaryService
 from app.core.deps import get_db,get_current_user
 from typing import List,Annotated
 from sqlalchemy.orm import Session
-from app.db.models.user import User
+from app.db.models.user_model import User
 DBSession = Annotated[Session,Depends(get_db)]
 UserSession = Annotated[User,Depends(get_current_user)]
 

@@ -37,17 +37,18 @@ class DiaryService:
             start_date=start_date,
             end_date=end_date
         )
+        if not entries:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Entry Not Found"
+            )
         for entry in entries:
             if entry.user_id!= user_id:
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail= "Invalid Credentials"
                 )
-        if not entries:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Entry Not Found"
-            )
+
         return entries
 
     @staticmethod
@@ -57,17 +58,18 @@ class DiaryService:
             entry_id=entry_id
 
         )
+        if not entry:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Entry Not Found"
+            )
         if entry.user_id != user_id:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail= "Invalid Credentials"
             )
 
-        if not entry:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Entry Not Found"
-            )
+
         return entry
 
     @staticmethod
@@ -77,16 +79,17 @@ class DiaryService:
             entry_id=entry_id,
             data=data
         )
-        if entry.user_id != user_id:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail= "Invalid Credentials"
-            )
         if not entry:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Entry Not Found"
             )
+        if entry.user_id != user_id:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail= "Invalid Credentials"
+            )
+
         return entry
 
 
