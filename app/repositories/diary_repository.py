@@ -20,9 +20,13 @@ class DiaryRepository:
         return entry
 
     @staticmethod
-    def get_entries(db:Session,user_id:int,
-                    skip:int=0,limit:int=10,
-                    start_date:date|None=None,end_date:date|None=None):
+    def get_entries(db:Session,
+                    user_id:int,
+                    offset:int,
+                    page:int,
+                    limit:int,
+                    start_date:date|None=None,
+                    end_date:date|None=None):
         query = db.query(DailyEntry).filter(DailyEntry.user_id == user_id)
 
         if start_date:
@@ -34,10 +38,14 @@ class DiaryRepository:
         return (
             query
             .order_by(DailyEntry.date.desc())
-            .offset(skip)
+            .offset(offset)
             .limit(limit)
             .all()
         )
+
+    @staticmethod
+    def count_diary_entries(db:Session,user_id:int):
+        return db.query(DailyEntry).filter(DailyEntry.user_id == user_id).count()
 
     @staticmethod
     def get_entry_by_id(db:Session,entry_id:int):

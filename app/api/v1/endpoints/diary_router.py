@@ -1,5 +1,5 @@
 from datetime import date
-from app.schemas.diary_schema import DiaryEntryCreate,DiaryEntryResponse
+from app.schemas.diary_schema import DiaryEntryCreate,DiaryEntryResponse,PaginatedDiaryEntryResponse
 from fastapi import APIRouter,Query,Depends
 from app.services.diary_service import DiaryService
 from app.core.deps import get_db,get_current_user
@@ -15,28 +15,27 @@ router = APIRouter()
 
 @router.post("/create",response_model=DiaryEntryResponse)
 async def create_diary_entry(data:DiaryEntryCreate,db:DBSession,current_user:UserSession):
-    user_id = 1
+
     return DiaryService.create_entry(
         db=db,
         user_id=current_user.id,
         data=data
     )
 
-@router.get("/entries",response_model=List[DiaryEntryResponse])
+@router.get("/entries",response_model=PaginatedDiaryEntryResponse)
 async def get_diary_entries(
         db:DBSession,
         current_user:UserSession,
-        skip:int = Query(0, ge=0),
-        limit:int = Query(10, le=100),
+        page:int ,
+        limit:int = Query(20, ge=0 ,le=100),
         start_date:date |None=None,
         end_date:date |None=None,
 
 ):
-    user_id = current_user.id
     return DiaryService.get_entries(
         db=db,
-        user_id=user_id,
-        skip=skip,
+        user_id=current_user.id,
+        page=page,
         limit=limit,
         start_date=start_date,
         end_date=end_date

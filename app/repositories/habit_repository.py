@@ -18,14 +18,22 @@ class HabitRepository:
         return habit
 
     @staticmethod
-    def get_user_habit(db:Session,user_id:int,skip:int=0,limit:int=10):
+    def get_user_habit(db:Session,
+                       user_id:int,
+                       offset:int,
+                       page:int,
+                       limit:int):
         return (
             db.query(Habit)
             .filter(Habit.user_id == user_id)
-            .offset(skip)
+            .offset(offset)
             .limit(limit)
             .all()
         )
+
+    @staticmethod
+    def count_user_habits(db:Session,user_id:int):
+        return db.query(Habit.user_id == user_id).count()
 
 
     @staticmethod

@@ -3,9 +3,10 @@ from typing import Annotated
 from sqlalchemy.orm import Session
 
 from app.schemas.social_auth_schema import GoogleAuthRequest,TokenResponse
-from app.services.social_auth_service import GoogleAuthService
+from app.services.google_auth_service import GoogleAuthService
 from app.services.apple_auth_service import AppleAuthService
 from app.core.deps import get_db
+from app.core.exceptions import InvalidGoogleTokenException
 
 DBSession =Annotated[Session,Depends(get_db)]
 router = APIRouter()
@@ -19,10 +20,7 @@ async def google_login(data:GoogleAuthRequest,db:DBSession):
     )
 
     if not access_token:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid Google token"
-        )
+        raise InvalidGoogleTokenException()
 
     return {
             "access_token": access_token,

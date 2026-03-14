@@ -1,11 +1,10 @@
 import requests
-from fastapi import HTTPException,status
 from jose import jwt
 from sqlalchemy.orm import Session
 
 from app.core.security import create_access_token
 from app.repositories.user_repository import UserRepository
-from app.schemas.apple_auth_schema import AppleAuthRequest
+from app.core.exceptions import InvalidAppleTokenException
 
 APPLE_KEY_URL = "https://appleid.apple.com/auth/keys"
 
@@ -24,10 +23,7 @@ class AppleAuthService:
                 break
 
         if not key :
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid Apple token"
-            )
+            raise InvalidAppleTokenException()
 
         payload = jwt.decode(
             token=token,

@@ -1,6 +1,3 @@
-
-from fastapi import HTTPException,status
-
 from app.core.config import settings
 from app.repositories.user_repository import UserRepository
 from app.core.security import create_access_token
@@ -8,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from google.oauth2 import id_token
 from google.auth.transport import requests
-from google.auth.exceptions import GoogleAuthError
+from app.core.exceptions import InvalidGoogleTokenException
 
 class GoogleAuthService:
 
@@ -21,9 +18,7 @@ class GoogleAuthService:
         )
 
         if not id_info:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Invalid Google token")
+            raise InvalidGoogleTokenException()
 
         provider_id = id_info.get("sub")
         email = id_info.get("email")

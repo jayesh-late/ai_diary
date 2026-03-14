@@ -1,9 +1,9 @@
-from fastapi import HTTPException,status
-
 from app.repositories.user_repository import UserRepository
 from sqlalchemy.orm import Session
 from app.core.security import hash_password,verify_password,create_access_token
-from app.schemas.auth_schema import UserSignup,UserLogin
+from app.core.exceptions import InvalidCredentialsException,EmailNotAcceptableException
+
+
 class AuthService:
 
     @staticmethod
@@ -14,10 +14,7 @@ class AuthService:
         )
 
         if existing_user:
-            raise HTTPException (
-                status_code=status.HTTP_406_NOT_ACCEPTABLE,
-                detail="Email Already Registered "
-            )
+            raise EmailNotAcceptableException()
 
         hashed = hash_password(password)
 
@@ -37,16 +34,10 @@ class AuthService:
         )
 
         if not user :
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid Credentials"
-            )
+            raise InvalidCredentialsException()
 
         if not verify_password(password,user.hashed_password):
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid Credentials"
-            )
+            raise InvalidCredentialsException()
 
         token = create_access_token({"user_id":user.id})
 

@@ -1,6 +1,6 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from datetime import date
-
+from typing import List
 
 class HabitCreate(BaseModel):
     name: str
@@ -17,6 +17,16 @@ class HabitResponse(BaseModel):
     class Config:
         from_attributes = True
 
+class PaginatedHabitResponse(BaseModel):
+    items: List[HabitResponse]
+    total: int
+    page: int
+    limit: int
+
+    model_config = ConfigDict(
+        from_attributes=True
+    )
+
 
 class HabitLogCreate(BaseModel):
     date: date
@@ -29,5 +39,16 @@ class HabitLogResponse(BaseModel):
     date: date
     completed: bool
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(
+        from_attributes=True
+    )
+
+class PaginatedHabitLogs(BaseModel):
+    items : List[HabitLogResponse]
+    total : int
+    page : int
+    limit : int
+
+    model_config = ConfigDict(
+        from_attributes= True
+    )

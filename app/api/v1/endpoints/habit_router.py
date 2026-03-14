@@ -1,6 +1,7 @@
-from fastapi import APIRouter,Depends
+
+from fastapi import APIRouter,Depends,Query
 from app.core.deps import get_db,get_current_user
-from app.schemas.habit_schema import HabitCreate,HabitResponse,HabitLogCreate,HabitLogResponse
+from app.schemas.habit_schema import HabitCreate,HabitResponse,HabitLogCreate,HabitLogResponse,PaginatedHabitResponse
 from app.services.habit_service import HabitService
 from typing import List,Annotated
 from sqlalchemy.orm import Session
@@ -22,15 +23,19 @@ async def create_habit(
         data=data
     )
 
-@router.get("/habits_list",response_model=List[HabitResponse])
+@router.get("/habits_list",response_model=PaginatedHabitResponse)
 async def habit_list(
         db:DBSession,
-        create_user:UserSession
+        create_user:UserSession,
+        page:int,
+        limit:int = Query(default=10,ge=1,le=100)
     ):
 
     return HabitService.list_habit(
         db=db,
-        user_id=create_user.id
+        user_id=create_user.id,
+        page=page,
+        limit=limit
     )
 
 @router.get("/habit/{habit_id}")

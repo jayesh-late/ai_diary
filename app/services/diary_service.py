@@ -1,8 +1,7 @@
-from fastapi import HTTPException,status
 from app.repositories.diary_repository import DiaryRepository
 from sqlalchemy.orm import Session
 
-from app.repositories.habit_repository import HabitRepository
+from app.core.exceptions import InvalidCredentialsException,DiaryEntryNotFound
 from app.schemas.diary_schema import DiaryEntryCreate
 
 class DiaryService:
@@ -15,41 +14,50 @@ class DiaryService:
             data= data
         )
         if not entry:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Entry Not Found"
-            )
+            raise DiaryEntryNotFound()
 
         if entry.user_id != user_id:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail= "Invalid Credentials"
-            )
+            raise InvalidCredentialsException()
         return entry
 
     @staticmethod
-    def get_entries(db:Session,user_id:int,skip:int=0,limit:int=10,start_date=None,end_date=None):
+    def get_entries(db:Session,
+                    user_id:int,
+                    page:int,
+                    limit:int,
+                    start_date=None,
+                    end_date=None):
+
+        offset = (page - 1) * limit
         entries = DiaryRepository.get_entries(
             db=db,
             user_id= user_id,
-            skip=skip,
+            offset= offset,
+            page=page,
             limit=limit,
             start_date=start_date,
             end_date=end_date
         )
         if not entries:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Entry Not Found"
-            )
+            raise DiaryEntryNotFound()
+
         for entry in entries:
             if entry.user_id!= user_id:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail= "Invalid Credentials"
-                )
+                raise InvalidCredentialsException()
 
-        return entries
+        total_entries = DiaryRepository.count_diary_entries(
+            db = db,
+            user_id = user_id
+        )
+
+        return {
+            "items":entries,
+            "total_entries":total_entries,
+            "page":page,
+            "limit":limit
+        }
+
+
 
     @staticmethod
     def get_entry_by_id(db:Session,user_id:int,entry_id:int):
@@ -59,15 +67,9 @@ class DiaryService:
 
         )
         if not entry:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Entry Not Found"
-            )
+            raise DiaryEntryNotFound()
         if entry.user_id != user_id:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail= "Invalid Credentials"
-            )
+            raise InvalidCredentialsException()
 
 
         return entry
@@ -80,15 +82,10 @@ class DiaryService:
             data=data
         )
         if not entry:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Entry Not Found"
-            )
+            raise DiaryEntryNotFound()
+
         if entry.user_id != user_id:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail= "Invalid Credentials"
-            )
+            raise InvalidCredentialsException()
 
         return entry
 
@@ -99,16 +96,10 @@ class DiaryService:
         entry = DiaryRepository.get_entry_by_id(db, entry_id)
 
         if not entry:
-            raise HTTPException(
-                status_code=404,
-                detail="Entry not found"
-            )
+            raise DiaryEntryNotFound()
 
         if entry.user_id != user_id:
-            raise HTTPException(
-                status_code=403,
-                detail="Forbidden"
-            )
+            raise InvalidCredentialsException()
 
         DiaryRepository.delete_entry(db, entry)
 

@@ -1,7 +1,7 @@
 from app.repositories.habit_repository import HabitRepository
 from sqlalchemy.orm import Session
 from app.schemas.habit_schema import HabitCreate
-from fastapi import HTTPException,status
+from app.core.exceptions import HabitNotFoundException,InvalidCredentialsException
 class HabitService:
 
     @staticmethod
@@ -11,35 +11,47 @@ class HabitService:
             user_id=user_id,
             data=data
         )
+        if not habit:
+            raise HabitNotFoundException()
+
         if habit.user_id != user_id:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid Credentials"
-            )
+            raise InvalidCredentialsException()
 
         return habit
 
     @staticmethod
-    def list_habit(db:Session,user_id:int):
+    def list_habit(
+            db:Session,
+            user_id:int,
+            page:int,
+            limit:int
+    ):
+        offset = (page - 1) * limit
         habits = HabitRepository.get_user_habit(
             db=db,
-            user_id=user_id
+            user_id=user_id,
+            offset= offset,
+            page=page,
+            limit=limit
         )
         if not habits:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Habit Not Found"
-            )
+            raise HabitNotFoundException()
 
 
         for habit in habits:
             if habit.user_id != user_id:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Invalid Credentials"
-                )
+                raise InvalidCredentialsException()
 
-        return habits
+        total_habits = HabitRepository.count_user_habits(
+            db=db,
+            user_id=user_id
+        )
+        return {
+            "items":habits,
+            "total":total_habits,
+            "page":page,
+            "limit":limit
+        }
 
     @staticmethod
     def get_habit(db:Session,user_id:int,habit_id:int):
@@ -48,16 +60,9 @@ class HabitService:
             habit_id=habit_id,
         )
         if not habit:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Habit Not Found"
-            )
-
+            raise HabitNotFoundException
         if habit.user_id != user_id:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid Credentials"
-            )
+            raise InvalidCredentialsException()
 
         return habit
 
@@ -68,16 +73,10 @@ class HabitService:
             habit_id=habit_id
         )
         if not habit:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Habit Not Found"
-            )
+            raise HabitNotFoundException
 
         if habit.user_id != user_id:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid Credentials"
-            )
+            raise InvalidCredentialsException()
 
         return HabitRepository.log_completion(
             db=db,

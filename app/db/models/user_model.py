@@ -23,3 +23,5 @@ class User(Base):
     daily_entries = relationship("DailyEntry", back_populates="user")
     habits = relationship("Habit", back_populates="user")
     decisions = relationship("Decision", back_populates="user")
+    subscription = relationship("UserSubscription",back_populates="user",uselist=False)
+
